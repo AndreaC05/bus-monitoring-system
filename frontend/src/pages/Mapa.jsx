@@ -1,133 +1,28 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import "../style/Mapa/Mapa.css";
 import Sidebar from "../components/Sidebar";
+import { getReportes } from "../api/reportes";
+import { getBuses } from "../api/buses";
+import { getEstaciones } from "../api/estaciones";
 
-const BUSES_MOCK = [
-  {
-    id_bus: 1,
-    codigo_bus: "MET-001",
-    capacidad: 160,
-    tipoServicio: "Expreso",
-    ultimoReporte: {
-      cantidad_pasajeros: 68,
-      porcentaje_ocupacion: 43,
-      latitud: -11.9289,
-      longitud: -77.0634,
-      timestamp: "2025-04-26T14:32:00",
-    },
-  },
-  {
-    id_bus: 2,
-    codigo_bus: "MET-002",
-    capacidad: 160,
-    tipoServicio: "Expreso",
-    ultimoReporte: {
-      cantidad_pasajeros: 140,
-      porcentaje_ocupacion: 88,
-      latitud: -12.1104,
-      longitud: -77.0113,
-      timestamp: "2025-04-26T14:31:00",
-    },
-  },
-  {
-    id_bus: 3,
-    codigo_bus: "MET-003",
-    capacidad: 120,
-    tipoServicio: "Regular",
-    ultimoReporte: {
-      cantidad_pasajeros: 120,
-      porcentaje_ocupacion: 100,
-      latitud: -11.9718,
-      longitud: -77.0532,
-      timestamp: "2025-04-26T14:30:00",
-    },
-  },
-  {
-    id_bus: 4,
-    codigo_bus: "MET-004",
-    capacidad: 120,
-    tipoServicio: "Regular",
-    ultimoReporte: {
-      cantidad_pasajeros: 45,
-      porcentaje_ocupacion: 38,
-      latitud: -12.0884,
-      longitud: -77.0204,
-      timestamp: "2025-04-26T14:29:00",
-    },
-  },
-  {
-    id_bus: 5,
-    codigo_bus: "MET-005",
-    capacidad: 80,
-    tipoServicio: "Alimentador Norte",
-    ultimoReporte: {
-      cantidad_pasajeros: 72,
-      porcentaje_ocupacion: 90,
-      latitud: -11.9402,
-      longitud: -77.0605,
-      timestamp: "2025-04-26T14:28:00",
-    },
-  },
-  {
-    id_bus: 6,
-    codigo_bus: "MET-006",
-    capacidad: 80,
-    tipoServicio: "Alimentador Sur",
-    ultimoReporte: {
-      cantidad_pasajeros: 30,
-      porcentaje_ocupacion: 38,
-      latitud: -12.1822,
-      longitud: -77.0042,
-      timestamp: "2025-04-26T14:27:00",
-    },
-  },
-  {
-    id_bus: 7,
-    codigo_bus: "MET-007",
-    capacidad: 160,
-    tipoServicio: "Expreso",
-    ultimoReporte: {
-      cantidad_pasajeros: 160,
-      porcentaje_ocupacion: 100,
-      latitud: -12.0564,
-      longitud: -77.0855,
-      timestamp: "2025-04-26T14:26:00",
-    },
-  },
-  {
-    id_bus: 8,
-    codigo_bus: "MET-008",
-    capacidad: 120,
-    tipoServicio: "Regular",
-    ultimoReporte: {
-      cantidad_pasajeros: 55,
-      porcentaje_ocupacion: 46,
-      latitud: -12.1256,
-      longitud: -77.0075,
-      timestamp: "2025-04-26T14:25:00",
-    },
-  },
-  {
-    id_bus: 9,
-    codigo_bus: "MET-009",
-    capacidad: 80,
-    tipoServicio: "Alimentador Norte",
-    ultimoReporte: null,
-  },
-];
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+  Tooltip,
+} from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
-/* Estaciones para dibujar la ruta en el mapa */
-const ESTACIONES = [
-  { nombre: "Naranjal", lat: -11.9289, lng: -77.0634 },
-  { nombre: "Independencia", lat: -11.9512, lng: -77.0577 },
-  { nombre: "Caquetá", lat: -11.9718, lng: -77.0532 },
-  { nombre: "España", lat: -11.993, lng: -77.0461 },
-  { nombre: "Est. Central", lat: -12.0564, lng: -77.0855 },
-  { nombre: "Javier Prado", lat: -12.0884, lng: -77.0204 },
-  { nombre: "Angamos", lat: -12.1104, lng: -77.0113 },
-  { nombre: "Benavides", lat: -12.1256, lng: -77.0075 },
-  { nombre: "Matellini", lat: -12.1822, lng: -77.0042 },
-];
+/* ─── Colores por nivel de ocupación ────────────────────── */
+const PIN_COLOR = {
+  disponible: "#27AE60",
+  "casi-lleno": "#F2C94C",
+  lleno: "#EB5757",
+  "sin-datos": "#B0B7C3",
+};
 
 const getNivel = (pct) => {
   if (pct === null || pct === undefined) return "sin-datos";
@@ -143,31 +38,11 @@ const getLabelNivel = (n) => {
   return "Sin datos";
 };
 
-const PIN_COLOR = {
-  disponible: "#27AE60",
-  "casi-lleno": "#F2C94C",
-  lleno: "#EB5757",
-  "sin-datos": "#B0B7C3",
-};
-
 const fmtHora = (ts) =>
   new Date(ts).toLocaleTimeString("es-PE", {
     hour: "2-digit",
     minute: "2-digit",
   });
-
-/* Proyección simple lat/lng → px dentro del viewBox 800x520 */
-const LAT_MIN = -12.22,
-  LAT_MAX = -11.9;
-const LNG_MIN = -77.11,
-  LNG_MAX = -76.98;
-const W = 800,
-  H = 520;
-
-const project = (lat, lng) => ({
-  x: ((lng - LNG_MIN) / (LNG_MAX - LNG_MIN)) * W,
-  y: ((lat - LAT_MIN) / (LAT_MAX - LAT_MIN)) * (H * -1) + H,
-});
 
 const FILTROS = [
   { key: "todos", label: "Todos" },
@@ -176,35 +51,337 @@ const FILTROS = [
   { key: "lleno", label: "Llenos" },
 ];
 
+/* ─── Icono personalizado para cada bus ────────────────── */
+const crearIconoBus = (codigo, color, isSelected) => {
+  const size = isSelected ? 44 : 38;
+  const html = `
+    <div style="
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+    ">
+      <div style="
+        width:${size}px;
+        height:${size}px;
+        border-radius:50%;
+        background:${color};
+        border:3px solid #fff;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-weight:800;
+        color:#fff;
+        font-size:${isSelected ? 16 : 14}px;
+        font-family:Inter,sans-serif;
+        box-shadow: 0 0 0 ${isSelected ? "4px" : "2px"} ${color}55;
+      ">🚌</div>
+      <div style="
+        background:${isSelected ? color : "#fff"};
+        color:${isSelected ? "#fff" : color};
+        border:1.5px solid ${color};
+        border-radius:4px;
+        padding:1px 5px;
+        font-size:9px;
+        font-weight:700;
+        font-family:Inter,sans-serif;
+        margin-top:2px;
+        white-space:nowrap;
+      ">${codigo}</div>
+    </div>
+  `;
+  return L.divIcon({
+    html,
+    className: "",
+    iconSize: [size + 20, size + 22],
+    iconAnchor: [(size + 20) / 2, (size + 22) / 2],
+    popupAnchor: [0, -(size / 2 + 14)],
+  });
+};
+
+/* ─── Icono para estaciones ─────────────────────────────── */
+const iconoEstacion = L.divIcon({
+  html: `<div style="
+    width:12px;height:12px;
+    border-radius:50%;
+    background:#fff;
+    border:2.5px solid #0B3C5D;
+    box-shadow:0 1px 3px rgba(0,0,0,0.2);
+  "></div>`,
+  className: "",
+  iconSize: [12, 12],
+  iconAnchor: [6, 6],
+});
+
+/* ─── Último reporte por bus ─────────────────────────────── */
+const ultimoReportePorBus = (reportes) => {
+  const map = {};
+  for (const r of reportes) {
+    if (
+      !map[r.id_bus] ||
+      new Date(r.timestamp) > new Date(map[r.id_bus].timestamp)
+    ) {
+      map[r.id_bus] = r;
+    }
+  }
+  return map;
+};
+
+/* ─── Estación más cercana ──────────────────────────────── */
+const estacionMasCercana = (lat, lng, estaciones) => {
+  let minDist = Infinity,
+    nearest = null,
+    nearestIdx = 0;
+  estaciones.forEach((est, i) => {
+    const d = Math.hypot(
+      lat - est.latitud_estacion,
+      lng - est.longitud_estacion,
+    );
+    if (d < minDist) {
+      minDist = d;
+      nearest = est;
+      nearestIdx = i;
+    }
+  });
+  return { nearest, nearestIdx };
+};
+
+/* ─── Interpola entre dos coordenadas ──────────────────── */
+const interpolar = (desde, hasta, t) => ({
+  lat: desde.lat + (hasta.lat - desde.lat) * t,
+  lng: desde.lng + (hasta.lng - desde.lng) * t,
+});
+
+/* ─── Hook: posición animada por bus ───────────────────── */
+const DURACION_MS = 8000; // duración de la animación entre posiciones
+
+function usePosicionAnimada(busesEnriquecidos) {
+  // posicionesRef: { [busId]: { lat, lng } } — posición interpolada actual
+  const posicionesRef = useRef({});
+  // animRef: { [busId]: { desde, hasta, startTime, rafId } }
+  const animRef = useRef({});
+  // estado para forzar re-render
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    busesEnriquecidos.forEach((bus) => {
+      const r = bus.ultimoReporte;
+      if (!r) return;
+
+      const nuevaPos = {
+        lat: parseFloat(r.latitud),
+        lng: parseFloat(r.longitud),
+      };
+
+      const actual = posicionesRef.current[bus.id];
+
+      // Si no hay posición previa, inicializar sin animar
+      if (!actual) {
+        posicionesRef.current[bus.id] = nuevaPos;
+        return;
+      }
+
+      // Si la posición destino cambió, iniciar nueva animación
+      const anim = animRef.current[bus.id];
+      const mismoDestino =
+        anim &&
+        anim.hasta.lat === nuevaPos.lat &&
+        anim.hasta.lng === nuevaPos.lng;
+
+      if (mismoDestino) return; // ya está animando hacia ahí
+
+      // Cancelar animación previa
+      if (anim?.rafId) cancelAnimationFrame(anim.rafId);
+
+      const desde = { ...posicionesRef.current[bus.id] };
+      const startTime = performance.now();
+
+      const animar = (now) => {
+        const t = Math.min((now - startTime) / DURACION_MS, 1);
+        const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; // ease-in-out
+
+        posicionesRef.current[bus.id] = interpolar(desde, nuevaPos, eased);
+        setTick((n) => n + 1); // fuerza re-render
+
+        if (t < 1) {
+          animRef.current[bus.id] = {
+            ...animRef.current[bus.id],
+            rafId: requestAnimationFrame(animar),
+          };
+        }
+      };
+
+      animRef.current[bus.id] = {
+        desde,
+        hasta: nuevaPos,
+        startTime,
+        rafId: requestAnimationFrame(animar),
+      };
+    });
+
+    // Cleanup al desmontar
+    return () => {
+      Object.values(animRef.current).forEach((a) => {
+        if (a?.rafId) cancelAnimationFrame(a.rafId);
+      });
+    };
+  }, [busesEnriquecidos]);
+
+  return posicionesRef.current;
+}
+
 export default function Mapa() {
+  const [buses, setBuses] = useState([]);
+  const [reportes, setReportes] = useState([]);
+  const [estaciones, setEstaciones] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState("todos");
   const [seleccionado, setSeleccionado] = useState(null);
+  const [rutaVial, setRutaVial] = useState([]);
+  const intervalRef = useRef(null);
+  const mapRef = useRef(null);
+
+  /* ── Carga de datos ── */
+  const cargar = useCallback(async () => {
+    try {
+      const [bData, rData, eData] = await Promise.all([
+        getBuses(),
+        getReportes(),
+        getEstaciones(),
+      ]);
+      setBuses(bData ?? []);
+      setReportes(rData ?? []);
+      setEstaciones(eData ?? []);
+    } catch (err) {
+      console.error("Error al cargar datos del mapa:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    cargar();
+    intervalRef.current = setInterval(cargar, 10000);
+    return () => clearInterval(intervalRef.current);
+  }, [cargar]);
+
+  const ultimosPorBus = useMemo(
+    () => ultimoReportePorBus(reportes),
+    [reportes],
+  );
+
+  const busesEnriquecidos = useMemo(() => {
+    return buses.map((bus) => {
+      const r = ultimosPorBus[bus.id] ?? null;
+      const pct = r
+        ? Math.round((r.cantidad_pasajeros / bus.capacidad) * 100)
+        : null;
+      return {
+        ...bus,
+        ultimoReporte: r ? { ...r, pct } : null,
+        tipoServicio: bus.tiposervicios?.tiposervicio ?? "—",
+        estado: bus.estados?.estado ?? "—",
+      };
+    });
+  }, [buses, ultimosPorBus]);
+
+  /* ── Posiciones animadas ── */
+  const posicionesAnimadas = usePosicionAnimada(busesEnriquecidos);
+
+  const estacionesOrdenadas = useMemo(
+    () => [...estaciones].sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0)),
+    [estaciones],
+  );
+
+  /* ── Ruta vial OSRM ── */
+  useEffect(() => {
+    if (estacionesOrdenadas.length < 2) return;
+    const coords = estacionesOrdenadas
+      .map(
+        (e) =>
+          `${parseFloat(e.longitud_estacion)},${parseFloat(e.latitud_estacion)}`,
+      )
+      .join(";");
+    fetch(
+      `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`,
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.routes?.[0]) {
+          const puntos = data.routes[0].geometry.coordinates.map(
+            ([lng, lat]) => [lat, lng],
+          );
+          setRutaVial(puntos);
+        }
+      })
+      .catch(console.error);
+  }, [estacionesOrdenadas]);
 
   const busesFiltrados = useMemo(() => {
-    return BUSES_MOCK.filter((b) => {
-      const nivel = getNivel(b.ultimoReporte?.porcentaje_ocupacion);
+    return busesEnriquecidos.filter((b) => {
+      const nivel = getNivel(b.ultimoReporte?.pct);
       return filtro === "todos" || nivel === filtro;
     });
-  }, [filtro]);
+  }, [busesEnriquecidos, filtro]);
 
   const busesMapa = busesFiltrados.filter((b) => b.ultimoReporte);
 
-  const busSelec = seleccionado
-    ? BUSES_MOCK.find((b) => b.id_bus === seleccionado)
-    : null;
+  const stats = useMemo(
+    () => ({
+      total: busesEnriquecidos.length,
+      disponible: busesEnriquecidos.filter(
+        (b) => getNivel(b.ultimoReporte?.pct) === "disponible",
+      ).length,
+      casi: busesEnriquecidos.filter(
+        (b) => getNivel(b.ultimoReporte?.pct) === "casi-lleno",
+      ).length,
+      lleno: busesEnriquecidos.filter(
+        (b) => getNivel(b.ultimoReporte?.pct) === "lleno",
+      ).length,
+    }),
+    [busesEnriquecidos],
+  );
 
-  const stats = {
-    total: BUSES_MOCK.length,
-    disponible: BUSES_MOCK.filter(
-      (b) => getNivel(b.ultimoReporte?.porcentaje_ocupacion) === "disponible",
-    ).length,
-    casi: BUSES_MOCK.filter(
-      (b) => getNivel(b.ultimoReporte?.porcentaje_ocupacion) === "casi-lleno",
-    ).length,
-    lleno: BUSES_MOCK.filter(
-      (b) => getNivel(b.ultimoReporte?.porcentaje_ocupacion) === "lleno",
-    ).length,
-  };
+  const destinoPorBus = useMemo(() => {
+    const map = {};
+    busesMapa.forEach((bus) => {
+      const r = bus.ultimoReporte;
+      if (!r || estacionesOrdenadas.length === 0) return;
+      const { nearestIdx } = estacionMasCercana(
+        r.latitud,
+        r.longitud,
+        estacionesOrdenadas,
+      );
+      const destIdx = (nearestIdx + 1) % estacionesOrdenadas.length;
+      map[bus.id] = estacionesOrdenadas[destIdx];
+    });
+    return map;
+  }, [busesMapa, estacionesOrdenadas]);
+
+  const mapCenter = useMemo(() => {
+    if (estacionesOrdenadas.length === 0) return [-12.05, -77.05];
+    const lats = estacionesOrdenadas.map((e) => parseFloat(e.latitud_estacion));
+    const lngs = estacionesOrdenadas.map((e) =>
+      parseFloat(e.longitud_estacion),
+    );
+    return [
+      lats.reduce((a, b) => a + b, 0) / lats.length,
+      lngs.reduce((a, b) => a + b, 0) / lngs.length,
+    ];
+  }, [estacionesOrdenadas]);
+
+  const handleSeleccionarBus = useCallback(
+    (busId) => {
+      setSeleccionado((prev) => (prev === busId ? null : busId));
+      const bus = busesEnriquecidos.find((b) => b.id === busId);
+      const pos = posicionesAnimadas[busId];
+      if (pos && mapRef.current) {
+        mapRef.current.flyTo([pos.lat, pos.lng], 16, { duration: 1.2 });
+      }
+    },
+    [busesEnriquecidos, posicionesAnimadas],
+  );
 
   return (
     <div className="layout-shell">
@@ -215,23 +392,27 @@ export default function Mapa() {
           <span className="topbar-title">Mapa</span>
           <div className="topbar-right">
             <span className="live-dot" />
-            <span className="live-label">Vista previa con datos de prueba</span>
+            <span className="live-label">
+              {loading ? "Cargando..." : "Actualizando cada 10s"}
+            </span>
           </div>
         </header>
 
         <main className="main-content">
           <div className="mapa-page">
-            {/* Header */}
             <div className="mapa-header">
               <div className="mapa-header__titles">
                 <h2>Posición en tiempo real</h2>
                 <p>
-                  Ruta Naranjal → Matellini · {busesMapa.length} buses en mapa
+                  {estacionesOrdenadas.length > 0
+                    ? `${estacionesOrdenadas[0]?.estaciones} → ${estacionesOrdenadas[estacionesOrdenadas.length - 1]?.estaciones}`
+                    : "Cargando ruta..."}
+                  {" · "}
+                  {busesMapa.length} buses en mapa
                 </p>
               </div>
             </div>
 
-            {/* Chips filtro */}
             <div className="mapa-chips">
               {FILTROS.map((f) => (
                 <button
@@ -250,60 +431,99 @@ export default function Mapa() {
               ))}
             </div>
 
-            {/* Body: mapa + panel */}
             <div className="mapa-body">
               {/* Panel lateral */}
               <div className="mapa-panel">
                 <div className="panel-title">
                   Buses · {busesFiltrados.length}
                 </div>
-                {busesFiltrados.map((bus) => {
-                  const r = bus.ultimoReporte;
-                  const pct = r?.porcentaje_ocupacion ?? null;
-                  const nivel = getNivel(pct);
-                  const isSelected = seleccionado === bus.id_bus;
-                  return (
-                    <div
-                      key={bus.id_bus}
-                      className={`panel-bus-card panel-bus-card--${nivel} ${isSelected ? "selected" : ""}`}
-                      onClick={() =>
-                        setSeleccionado(isSelected ? null : bus.id_bus)
-                      }
-                    >
-                      <div className="pbc-top">
-                        <span className="pbc-code">{bus.codigo_bus}</span>
-                        <span className={`badge badge--${nivel}`}>
-                          <span className="badge__dot" />
-                          {getLabelNivel(nivel)}
-                        </span>
-                      </div>
-                      <div className="ocu-bar-bg">
-                        <div
-                          className={`ocu-bar-fill ocu-bar-fill--${nivel}`}
-                          style={{ width: `${Math.min(pct ?? 0, 100)}%` }}
-                        />
-                      </div>
-                      <div className="pbc-meta">
-                        <span>{bus.tipoServicio}</span>
-                        <span>{pct !== null ? `${pct}%` : "—"}</span>
-                      </div>
-                      {r && (
-                        <div className="pbc-coord">
-                          {parseFloat(r.latitud).toFixed(4)},{" "}
-                          {parseFloat(r.longitud).toFixed(4)}
-                          {" · "}
-                          {fmtHora(r.timestamp)}
+
+                {loading ? (
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "24px 0",
+                      color: "var(--color-text-gray)",
+                    }}
+                  >
+                    <i
+                      className="pi pi-spin pi-spinner"
+                      style={{ fontSize: 20 }}
+                    />
+                    <p style={{ marginTop: 8, fontSize: 12 }}>Cargando...</p>
+                  </div>
+                ) : (
+                  busesFiltrados.map((bus) => {
+                    const r = bus.ultimoReporte;
+                    const pct = r?.pct ?? null;
+                    const nivel = getNivel(pct);
+                    const isSelected = seleccionado === bus.id;
+                    const destino = destinoPorBus[bus.id];
+
+                    return (
+                      <div
+                        key={bus.id}
+                        className={`panel-bus-card panel-bus-card--${nivel} ${isSelected ? "selected" : ""}`}
+                        onClick={() => handleSeleccionarBus(bus.id)}
+                      >
+                        <div className="pbc-top">
+                          <span className="pbc-code">{bus.codigo_bus}</span>
+                          <span className={`badge badge--${nivel}`}>
+                            <span className="badge__dot" />
+                            {getLabelNivel(nivel)}
+                          </span>
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
+
+                        <div className="ocu-bar-bg">
+                          <div
+                            className={`ocu-bar-fill ocu-bar-fill--${nivel}`}
+                            style={{ width: `${Math.min(pct ?? 0, 100)}%` }}
+                          />
+                        </div>
+
+                        <div className="pbc-meta">
+                          <span>{bus.tipoServicio}</span>
+                          <span>{pct !== null ? `${pct}%` : "—"}</span>
+                        </div>
+
+                        {r && (
+                          <div className="pbc-pasajeros">
+                            <span className="pbc-pax-icon">👥</span>
+                            <span>
+                              {r.cantidad_pasajeros} / {bus.capacidad} pax
+                            </span>
+                          </div>
+                        )}
+
+                        {destino && (
+                          <div className="pbc-destino">
+                            <span className="pbc-destino-arrow">→</span>
+                            <span>{destino.estaciones}</span>
+                          </div>
+                        )}
+
+                        {r && (
+                          <div className="pbc-coord">
+                            {posicionesAnimadas[bus.id]
+                              ? `${posicionesAnimadas[bus.id].lat.toFixed(4)}, ${posicionesAnimadas[bus.id].lng.toFixed(4)}`
+                              : `${parseFloat(r.latitud).toFixed(4)}, ${parseFloat(r.longitud).toFixed(4)}`}
+                            {" · "}
+                            {fmtHora(r.timestamp)}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
               </div>
 
-              {/* Mapa SVG */}
-              <div className="mapa-container">
+              {/* Mapa Leaflet */}
+              <div
+                className="mapa-container"
+                style={{ padding: 0, overflow: "hidden", borderRadius: 12 }}
+              >
                 {/* Contador flotante */}
-                <div className="mapa-counter">
+                <div className="mapa-counter" style={{ zIndex: 1000 }}>
                   <div className="mapa-counter-item">
                     <span>{stats.total}</span>
                     <span>Total</span>
@@ -322,244 +542,254 @@ export default function Mapa() {
                   </div>
                 </div>
 
-                <svg
-                  className="mapa-svg"
-                  viewBox={`0 0 ${W} ${H}`}
-                  preserveAspectRatio="xMidYMid meet"
-                >
-                  {/* Fondo de cuadrícula sutil */}
-                  <defs>
-                    <pattern
-                      id="grid"
-                      width="40"
-                      height="40"
-                      patternUnits="userSpaceOnUse"
-                    >
-                      <path
-                        d="M 40 0 L 0 0 0 40"
-                        fill="none"
-                        stroke="#D8DDE6"
-                        strokeWidth="0.5"
+                {loading ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: "100%",
+                      flexDirection: "column",
+                      gap: 12,
+                      color: "var(--color-text-gray)",
+                    }}
+                  >
+                    <i
+                      className="pi pi-spin pi-spinner"
+                      style={{ fontSize: 28, color: "var(--color-blue)" }}
+                    />
+                    <p style={{ fontSize: 13 }}>Cargando mapa...</p>
+                  </div>
+                ) : (
+                  <MapContainer
+                    center={mapCenter}
+                    zoom={14}
+                    style={{ width: "100%", height: "100%", borderRadius: 12 }}
+                    ref={mapRef}
+                    zoomControl={true}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+                      url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                    />
+
+                    {/* Ruta vial */}
+                    {rutaVial.length > 1 && (
+                      <Polyline
+                        positions={rutaVial}
+                        pathOptions={{
+                          color: "#0B3C5D",
+                          weight: 5,
+                          opacity: 0.8,
+                        }}
                       />
-                    </pattern>
-                  </defs>
-                  <rect width={W} height={H} fill="#EDF1F7" />
-                  <rect width={W} height={H} fill="url(#grid)" />
+                    )}
 
-                  {/* Línea de ruta entre estaciones */}
-                  {ESTACIONES.map((est, i) => {
-                    if (i === ESTACIONES.length - 1) return null;
-                    const a = project(est.lat, est.lng);
-                    const b = project(
-                      ESTACIONES[i + 1].lat,
-                      ESTACIONES[i + 1].lng,
-                    );
-                    return (
-                      <line
-                        key={i}
-                        x1={a.x}
-                        y1={a.y}
-                        x2={b.x}
-                        y2={b.y}
-                        stroke="#0B3C5D"
-                        strokeWidth="2.5"
-                        strokeDasharray="6 4"
-                        opacity="0.4"
-                      />
-                    );
-                  })}
-
-                  {/* Puntos de estaciones */}
-                  {ESTACIONES.map((est) => {
-                    const { x, y } = project(est.lat, est.lng);
-                    return (
-                      <g key={est.nombre}>
-                        <circle
-                          cx={x}
-                          cy={y}
-                          r="5"
-                          fill="#fff"
-                          stroke="#0B3C5D"
-                          strokeWidth="2"
-                        />
-                        <text
-                          x={x}
-                          y={y - 10}
-                          textAnchor="middle"
-                          fontSize="9"
-                          fill="#6B7280"
-                          fontFamily="Inter, sans-serif"
-                        >
-                          {est.nombre}
-                        </text>
-                      </g>
-                    );
-                  })}
-
-                  {/* Pines de buses */}
-                  {busesMapa.map((bus) => {
-                    const r = bus.ultimoReporte;
-                    const pct = r.porcentaje_ocupacion;
-                    const nivel = getNivel(pct);
-                    const color = PIN_COLOR[nivel];
-                    const { x, y } = project(r.latitud, r.longitud);
-                    const isSelected = seleccionado === bus.id_bus;
-
-                    return (
-                      <g
-                        key={bus.id_bus}
-                        className={`bus-pin ${isSelected ? "selected" : ""}`}
-                        onClick={() =>
-                          setSeleccionado(isSelected ? null : bus.id_bus)
-                        }
-                        transform={`translate(${x}, ${y})`}
+                    {/* Estaciones */}
+                    {estacionesOrdenadas.map((est) => (
+                      <Marker
+                        key={est.id ?? est.estaciones}
+                        position={[
+                          parseFloat(est.latitud_estacion),
+                          parseFloat(est.longitud_estacion),
+                        ]}
+                        icon={iconoEstacion}
                       >
-                        {/* Sombra */}
-                        <circle cx="0" cy="2" r="10" fill="rgba(0,0,0,0.1)" />
-                        {/* Pin cuerpo */}
-                        <circle
-                          cx="0"
-                          cy="0"
-                          r="14"
-                          fill={color}
-                          opacity="0.2"
-                        />
-                        <circle cx="0" cy="0" r="10" fill={color} />
-                        {/* Ícono bus */}
-                        <text
-                          x="0"
-                          y="4"
-                          textAnchor="middle"
-                          fontSize="11"
-                          fill="#fff"
-                          fontFamily="Inter, sans-serif"
-                          fontWeight="700"
-                          style={{ pointerEvents: "none" }}
+                        <Tooltip
+                          direction="top"
+                          offset={[0, -8]}
+                          permanent
+                          className="estacion-tooltip"
                         >
-                          B
-                        </text>
-                        {/* Etiqueta código */}
-                        <rect
-                          x="-22"
-                          y="14"
-                          width="44"
-                          height="14"
-                          rx="4"
-                          fill={isSelected ? color : "#fff"}
-                          stroke={color}
-                          strokeWidth="1"
-                        />
-                        <text
-                          x="0"
-                          y="24"
-                          textAnchor="middle"
-                          fontSize="8"
-                          fontWeight="600"
-                          fill={isSelected ? "#fff" : color}
-                          fontFamily="Inter, sans-serif"
-                          style={{ pointerEvents: "none" }}
-                        >
-                          {bus.codigo_bus}
-                        </text>
-                      </g>
-                    );
-                  })}
+                          {est.estaciones}
+                        </Tooltip>
+                      </Marker>
+                    ))}
 
-                  {/* Popup del bus seleccionado */}
-                  {busSelec &&
-                    busSelec.ultimoReporte &&
-                    (() => {
-                      const r = busSelec.ultimoReporte;
-                      const pct = r.porcentaje_ocupacion;
-                      const nivel = getNivel(pct);
-                      const { x, y } = project(r.latitud, r.longitud);
-                      const px = Math.min(x + 18, W - 160);
-                      const py = Math.max(y - 90, 10);
+                    {/* Buses — usan posición interpolada */}
+                    {busesMapa.map((bus) => {
+                      const r = bus.ultimoReporte;
+                      const nivel = getNivel(r.pct);
+                      const color = PIN_COLOR[nivel];
+                      const isSelected = seleccionado === bus.id;
+                      const destino = destinoPorBus[bus.id];
+
+                      // Posición animada o fallback al reporte real
+                      const pos = posicionesAnimadas[bus.id] ?? {
+                        lat: parseFloat(r.latitud),
+                        lng: parseFloat(r.longitud),
+                      };
+
                       return (
-                        <g transform={`translate(${px}, ${py})`}>
-                          <rect
-                            x="0"
-                            y="0"
-                            width="150"
-                            height="80"
-                            rx="8"
-                            fill="#fff"
-                            stroke="#E5E7EB"
-                            strokeWidth="1"
-                          />
-                          <text
-                            x="10"
-                            y="18"
-                            fontSize="11"
-                            fontWeight="700"
-                            fill="#1F2937"
-                            fontFamily="Inter, sans-serif"
+                        <Marker
+                          key={bus.id}
+                          position={[pos.lat, pos.lng]}
+                          icon={crearIconoBus(
+                            bus.codigo_bus,
+                            color,
+                            isSelected,
+                          )}
+                          eventHandlers={{
+                            click: () => handleSeleccionarBus(bus.id),
+                          }}
+                          zIndexOffset={isSelected ? 1000 : 0}
+                        >
+                          <Popup
+                            closeOnClick={false}
+                            autoPan={false}
+                            className="bus-popup"
                           >
-                            {busSelec.codigo_bus}
-                          </text>
-                          <text
-                            x="10"
-                            y="32"
-                            fontSize="9"
-                            fill="#6B7280"
-                            fontFamily="Inter, sans-serif"
-                          >
-                            {busSelec.tipoServicio}
-                          </text>
-                          <text
-                            x="10"
-                            y="48"
-                            fontSize="9"
-                            fill="#6B7280"
-                            fontFamily="Inter, sans-serif"
-                          >
-                            Pasajeros:
-                          </text>
-                          <text
-                            x="80"
-                            y="48"
-                            fontSize="9"
-                            fontWeight="600"
-                            fill="#1F2937"
-                            fontFamily="Inter, sans-serif"
-                          >
-                            {r.cantidad_pasajeros}/{busSelec.capacidad}
-                          </text>
-                          <text
-                            x="10"
-                            y="62"
-                            fontSize="9"
-                            fill="#6B7280"
-                            fontFamily="Inter, sans-serif"
-                          >
-                            Ocupación:
-                          </text>
-                          <text
-                            x="80"
-                            y="62"
-                            fontSize="9"
-                            fontWeight="600"
-                            fill={PIN_COLOR[nivel]}
-                            fontFamily="Inter, sans-serif"
-                          >
-                            {pct}%
-                          </text>
-                          <text
-                            x="10"
-                            y="75"
-                            fontSize="8"
-                            fill="#B0B7C3"
-                            fontFamily="Inter, sans-serif"
-                          >
-                            {fmtHora(r.timestamp)}
-                          </text>
-                        </g>
+                            <div
+                              style={{
+                                fontFamily: "Inter, sans-serif",
+                                minWidth: 180,
+                                padding: "4px 2px",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  marginBottom: 8,
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    fontWeight: 700,
+                                    fontSize: 15,
+                                    color: "#1F2937",
+                                  }}
+                                >
+                                  {bus.codigo_bus}
+                                </span>
+                                <span
+                                  style={{
+                                    background: color + "22",
+                                    color,
+                                    border: `1px solid ${color}`,
+                                    borderRadius: 6,
+                                    padding: "2px 8px",
+                                    fontSize: 11,
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  {getLabelNivel(nivel)}
+                                </span>
+                              </div>
+
+                              <div
+                                style={{
+                                  background: "#F3F4F6",
+                                  borderRadius: 4,
+                                  height: 6,
+                                  marginBottom: 10,
+                                  overflow: "hidden",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: `${Math.min(r.pct ?? 0, 100)}%`,
+                                    height: "100%",
+                                    background: color,
+                                    borderRadius: 4,
+                                    transition: "width 0.4s ease",
+                                  }}
+                                />
+                              </div>
+
+                              <div
+                                style={{
+                                  fontSize: 12,
+                                  color: "#6B7280",
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: 4,
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <span>Servicio</span>
+                                  <span
+                                    style={{
+                                      color: "#1F2937",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    {bus.tipoServicio}
+                                  </span>
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <span>Pasajeros</span>
+                                  <span
+                                    style={{
+                                      color: "#1F2937",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    {r.cantidad_pasajeros} / {bus.capacidad}
+                                  </span>
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <span>Ocupación</span>
+                                  <span style={{ color, fontWeight: 700 }}>
+                                    {r.pct}%
+                                  </span>
+                                </div>
+                                {destino && (
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                    }}
+                                  >
+                                    <span>→ Próxima</span>
+                                    <span
+                                      style={{
+                                        color: "#1F2937",
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {destino.estaciones}
+                                    </span>
+                                  </div>
+                                )}
+                                <div
+                                  style={{
+                                    marginTop: 4,
+                                    paddingTop: 6,
+                                    borderTop: "1px solid #F3F4F6",
+                                    color: "#B0B7C3",
+                                    fontSize: 10,
+                                  }}
+                                >
+                                  Última actualización: {fmtHora(r.timestamp)}
+                                </div>
+                              </div>
+                            </div>
+                          </Popup>
+                        </Marker>
                       );
-                    })()}
-                </svg>
+                    })}
+                  </MapContainer>
+                )}
 
                 {/* Leyenda */}
-                <div className="mapa-leyenda">
+                <div className="mapa-leyenda" style={{ zIndex: 1000 }}>
                   <div className="leyenda-item">
                     <span
                       className="leyenda-dot"

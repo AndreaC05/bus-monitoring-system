@@ -17,6 +17,13 @@ const reportes = require("./routes/reportesRouter");
 const estacion = require("./routes/estacionRouter");
 const tiposervicioestacion = require("./routes/tiposervicioestacionRouter");
 
+// ── Simulador GPS ──
+const { iniciarSimulador } = require('./simulador');
+
+setTimeout(() => {
+  iniciarSimulador();
+}, 2000);
+
 
 // Estado
 app.use("/api/estados", estado);

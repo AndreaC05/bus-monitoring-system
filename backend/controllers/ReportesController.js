@@ -5,17 +5,13 @@ const { Reportes, Bus } = require("../models");
 const getReportes = async (req, res) => {
   try {
     const reportes = await Reportes.findAll({
-      include: [
-        {
-          model: Bus,
-          as: "buses",
-        },
-      ],
+      include: [{ model: Bus, as: "buses" }],
+      order: [["timestamp", "DESC"]],
+      limit: 100,
     });
-
     res.status(200).json(reportes);
   } catch (error) {
-    res.status(500).json({ message: "Error al obetener los Reportes", error });
+    res.status(500).json({ message: "Error al obtener los Reportes", error });
   }
 };
 

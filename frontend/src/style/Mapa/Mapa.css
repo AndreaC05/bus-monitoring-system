@@ -310,3 +310,54 @@
   color: var(--color-text-gray);
   margin-top: 2px;
 }
+
+/* Tooltip de estaciones */
+.estacion-tooltip {
+  background: #fff !important;
+  border: 1.5px solid #0B3C5D !important;
+  border-radius: 6px !important;
+  color: #0B3C5D !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  font-family: Inter, sans-serif !important;
+  padding: 3px 8px !important;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.12) !important;
+  white-space: nowrap !important;
+}
+.estacion-tooltip::before {
+  display: none !important;
+}
+
+/* Popup de buses */
+.bus-popup .leaflet-popup-content-wrapper {
+  border-radius: 12px !important;
+  padding: 0 !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12) !important;
+  border: 1px solid #E5E7EB !important;
+}
+.bus-popup .leaflet-popup-content {
+  margin: 12px 14px !important;
+}
+.bus-popup .leaflet-popup-tip-container {
+  display: none !important;
+}
+
+/* Asegurar que el contador y leyenda estén encima del mapa */
+.mapa-counter {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+.mapa-leyenda {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 1000;
+}
+
+/* Asegurar que el contenedor del mapa tenga posición relativa */
+.mapa-container {
+  position: relative;
+}

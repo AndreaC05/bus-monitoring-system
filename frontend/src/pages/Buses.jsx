@@ -15,13 +15,6 @@ const getNivel = (pct) => {
   return "disponible";
 };
 
-const getLabelNivel = (nivel) => {
-  if (nivel === "lleno") return "Lleno";
-  if (nivel === "casi-lleno") return "Casi lleno";
-  if (nivel === "disponible") return "Disponible";
-  return "Sin datos";
-};
-
 const fmtHora = (ts) => {
   if (!ts) return "—";
   return new Date(ts).toLocaleTimeString("es-PE", {
@@ -48,7 +41,6 @@ export default function Buses() {
   const [busSeleccionado, setBusSeleccionado] = useState(null);
   const toast = useRef(null);
 
-  /* ── Cargar tabla ── */
   const cargarBuses = useCallback(async () => {
     setLoadingTabla(true);
     try {
@@ -62,11 +54,20 @@ export default function Buses() {
               )
             : null;
 
+        // Calcula el porcentaje si no viene del backend
+        if (ultimoReporte && bus.capacidad) {
+          ultimoReporte.porcentaje_ocupacion =
+            ultimoReporte.porcentaje_ocupacion ??
+            Math.round(
+              (ultimoReporte.cantidad_pasajeros / bus.capacidad) * 100,
+            );
+        }
+
         return {
           ...bus,
-          tipoServicio: bus.tiposervicios, // "Expreso 1"
-          estado: bus.estados?.estado, // "Disponible"
-          ultimoReporte, // null si no hay reportes
+          tipoServicio: bus.tiposervicios,
+          estado: bus.estados?.estado,
+          ultimoReporte,
         };
       });
 
@@ -88,7 +89,6 @@ export default function Buses() {
     cargarBuses();
   }, [cargarBuses]);
 
-  /* ── Callback cuando el formulario guarda con éxito ── */
   const handleGuardar = (busCreado) => {
     toast.current?.show({
       severity: "success",
@@ -96,7 +96,7 @@ export default function Buses() {
       detail: `${busCreado?.codigo_bus ?? "Nuevo bus"} agregado a la flota.`,
       life: 3500,
     });
-    cargarBuses(); /* recarga la tabla */
+    cargarBuses();
   };
 
   const handleEditar = (busActualizado) => {
@@ -119,7 +119,6 @@ export default function Buses() {
     cargarBuses();
   };
 
-  /* ── Filtrado local ── */
   const busesFiltrados = useMemo(() => {
     return buses.filter((bus) => {
       const q = busqueda.toLowerCase();
@@ -248,7 +247,7 @@ export default function Buses() {
                 <tbody>
                   {loadingTabla ? (
                     <tr>
-                      <td colSpan={6}>
+                      <td colSpan={7}>
                         <div className="buses-empty">
                           <i
                             className="pi pi-spin pi-spinner"
@@ -260,7 +259,7 @@ export default function Buses() {
                     </tr>
                   ) : busesFiltrados.length === 0 ? (
                     <tr>
-                      <td colSpan={6}>
+                      <td colSpan={7}>
                         <div className="buses-empty">
                           <div className="buses-empty__icon">
                             <svg
@@ -286,54 +285,6 @@ export default function Buses() {
                           <p>No hay buses que coincidan con los filtros</p>
                         </div>
                       </td>
-                      <td>
-                        <div className="td-actions">
-                          <button
-                            className="td-action-btn td-action-btn--edit"
-                            title="Editar bus"
-                            onClick={() => {
-                              setBusSeleccionado(bus);
-                              setEditModalVisible(true);
-                            }}
-                          >
-                            <svg
-                              width="13"
-                              height="13"
-                              viewBox="0 0 16 16"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="1.6"
-                            >
-                              <path d="M11.5 1.5l3 3-9 9H2.5v-3l9-9z" />
-                              <path d="M9.5 3.5l3 3" />
-                            </svg>
-                          </button>
-                          <button
-                            className="td-action-btn td-action-btn--delete"
-                            title="Eliminar bus"
-                            onClick={() => {
-                              setBusSeleccionado(bus);
-                              setDeleteModalVisible(true);
-                            }}
-                          >
-                            <svg
-                              width="13"
-                              height="13"
-                              viewBox="0 0 16 16"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="1.6"
-                            >
-                              <polyline
-                                points="2 4 14 4"
-                                strokeLinecap="round"
-                              />
-                              <path d="M5 4V2h6v2" />
-                              <path d="M3 4l1 10h8l1-10" />
-                            </svg>
-                          </button>
-                        </div>
-                      </td>
                     </tr>
                   ) : (
                     busesFiltrados.map((bus) => {
@@ -343,6 +294,7 @@ export default function Buses() {
 
                       return (
                         <tr key={bus.id_bus}>
+                          {/* Bus */}
                           <td>
                             <div className="td-codigo">
                               <div className="bus-avatar">
@@ -385,17 +337,22 @@ export default function Buses() {
                             </div>
                           </td>
 
+                          {/* Servicio */}
                           <td className="td-servicio">
                             {bus.tipoServicio?.tiposervicio ?? "—"}
                           </td>
 
+                          {/* Capacidad */}
                           <td className="td-capacidad">{bus.capacidad} pax</td>
 
+                          {/* Ocupación */}
                           <td className="td-ocu">
                             {r ? (
                               <>
                                 <div className="td-ocu-row">
-                                  <span className="td-ocu-pct">{pct}%</span>
+                                  <span className="td-ocu-pct">
+                                    {pct !== null ? `${pct}%` : "—"}
+                                  </span>
                                   <span className="td-ocu-num">
                                     {r.cantidad_pasajeros}/{bus.capacidad}
                                   </span>
@@ -403,7 +360,9 @@ export default function Buses() {
                                 <div className="ocu-bar-bg">
                                   <div
                                     className={`ocu-bar-fill ocu-bar-fill--${nivel}`}
-                                    style={{ width: `${Math.min(pct, 100)}%` }}
+                                    style={{
+                                      width: `${Math.min(pct ?? 0, 100)}%`,
+                                    }}
                                   />
                                 </div>
                               </>
@@ -419,6 +378,7 @@ export default function Buses() {
                             )}
                           </td>
 
+                          {/* Estado */}
                           <td>
                             <span
                               className={`badge badge--${
@@ -436,7 +396,10 @@ export default function Buses() {
                             </span>
                           </td>
 
+                          {/* Último reporte */}
                           <td className="td-time">{fmtHora(r?.timestamp)}</td>
+
+                          {/* Acciones */}
                           <td>
                             <div className="td-actions">
                               <button
@@ -496,7 +459,6 @@ export default function Buses() {
         </main>
       </div>
 
-      {/* Modal formulario */}
       <FormularioBuses
         visible={modalVisible}
         onHide={() => setModalVisible(false)}
