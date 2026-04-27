@@ -119,9 +119,23 @@ GET        /api/tiposervicioestacion         Obtener relaciones servicio-estaci�
 GET        /api/estado                       Obtener estados de bus
 
 /*EXTRA*/
-Simulador de buses:
+**Notas sobre el desarrollo**
 
-El archivo simulador.js genera automáticamente reportes de posición y ocupación para cada bus activo. Funciona interpolando coordenadas entre las estaciones de su ruta asignada, simulando el movimiento real de los vehículos. Se inicia junto con el backend al ejecutar npm run dev.
+Simulador de movimiento de buses (simulador.js)
+
+Para poder demostrar el sistema sin hardware físico, se implementó un simulador que genera reportes automáticos de ubicación y ocupación por cada bus activo. Funciona interpolando coordenadas entre las estaciones de la ruta asignada, imitando el movimiento real de un vehículo a lo largo de su recorrido.
+
+Se inicia automáticamente junto con el backend al ejecutar npm run dev.
+
+**Uso de IA como herramienta de apoyo**
+
+Durante el desarrollo se utilizó IA (Claude) como apoyo en varias etapas: sugerencias de validaciones en el backend, resolución de errores puntuales, consultas sobre Sequelize y parte del trabajo en el frontend.
+
+Todo el código generado fue revisado, entendido y ajustado antes de integrarse al proyecto. 
+
+**Las decisiones centrales** 
+
+El modelado de la base de datos, la definición de endpoints, la lógica de validación, la estructura general del proyecto y el flujo de datos entre capas — fueron tomadas de forma independiente. La IA se usó como herramienta, no como sustituto del razonamiento técnico.
 
 
 
