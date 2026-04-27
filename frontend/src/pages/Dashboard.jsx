@@ -1,119 +1,20 @@
+import { useState, useEffect, useCallback } from "react";
 import "../style/DashBoard/Dashboard.css";
 import Sidebar from "../components/Sidebar";
+import { getBuses } from "../api/buses";
 
-const BUSES_MOCK = [
-  {
-    id_bus: 1,
-    codigo_bus: "MET-001",
-    capacidad: 160,
-    tipoServicio: { tiposervicio: "Expreso" },
-    ultimoReporte: {
-      cantidad_pasajeros: 68,
-      porcentaje_ocupacion: 43,
-      latitud: -12.04318,
-      longitud: -77.02824,
-      timestamp: "2025-04-26T14:32:00",
-    },
-  },
-  {
-    id_bus: 2,
-    codigo_bus: "MET-002",
-    capacidad: 160,
-    tipoServicio: { tiposervicio: "Expreso" },
-    ultimoReporte: {
-      cantidad_pasajeros: 140,
-      porcentaje_ocupacion: 88,
-      latitud: -12.11045,
-      longitud: -77.0113,
-      timestamp: "2025-04-26T14:31:00",
-    },
-  },
-  {
-    id_bus: 3,
-    codigo_bus: "MET-003",
-    capacidad: 120,
-    tipoServicio: { tiposervicio: "Regular" },
-    ultimoReporte: {
-      cantidad_pasajeros: 120,
-      porcentaje_ocupacion: 100,
-      latitud: -11.9718,
-      longitud: -77.0532,
-      timestamp: "2025-04-26T14:30:00",
-    },
-  },
-  {
-    id_bus: 4,
-    codigo_bus: "MET-004",
-    capacidad: 120,
-    tipoServicio: { tiposervicio: "Regular" },
-    ultimoReporte: {
-      cantidad_pasajeros: 45,
-      porcentaje_ocupacion: 38,
-      latitud: -12.0884,
-      longitud: -77.0204,
-      timestamp: "2025-04-26T14:29:00",
-    },
-  },
-  {
-    id_bus: 5,
-    codigo_bus: "MET-005",
-    capacidad: 80,
-    tipoServicio: { tiposervicio: "Alimentador Norte" },
-    ultimoReporte: {
-      cantidad_pasajeros: 72,
-      porcentaje_ocupacion: 90,
-      latitud: -11.9402,
-      longitud: -77.0605,
-      timestamp: "2025-04-26T14:28:00",
-    },
-  },
-  {
-    id_bus: 6,
-    codigo_bus: "MET-006",
-    capacidad: 80,
-    tipoServicio: { tiposervicio: "Alimentador Sur" },
-    ultimoReporte: {
-      cantidad_pasajeros: 30,
-      porcentaje_ocupacion: 38,
-      latitud: -12.1822,
-      longitud: -77.0042,
-      timestamp: "2025-04-26T14:27:00",
-    },
-  },
-  {
-    id_bus: 7,
-    codigo_bus: "MET-007",
-    capacidad: 160,
-    tipoServicio: { tiposervicio: "Expreso" },
-    ultimoReporte: {
-      cantidad_pasajeros: 160,
-      porcentaje_ocupacion: 100,
-      latitud: -12.0564,
-      longitud: -77.0855,
-      timestamp: "2025-04-26T14:26:00",
-    },
-  },
-  {
-    id_bus: 8,
-    codigo_bus: "MET-008",
-    capacidad: 120,
-    tipoServicio: { tiposervicio: "Regular" },
-    ultimoReporte: {
-      cantidad_pasajeros: 55,
-      porcentaje_ocupacion: 46,
-      latitud: -12.1256,
-      longitud: -77.0075,
-      timestamp: "2025-04-26T14:25:00",
-    },
-  },
-  {
-    id_bus: 9,
-    codigo_bus: "MET-009",
-    capacidad: 80,
-    tipoServicio: { tiposervicio: "Alimentador Norte" },
-    ultimoReporte: null,
-  },
-];
+// ── Helpers ──────────────────────────────────────────
+const getUltimoReporte = (reportes) => {
+  if (!reportes || reportes.length === 0) return null;
+  return reportes.reduce((latest, r) =>
+    new Date(r.timestamp) > new Date(latest.timestamp) ? r : latest,
+  );
+};
+
+const calcPct = (pasajeros, capacidad) => {
+  if (!capacidad || pasajeros == null) return null;
+  return Math.round((pasajeros / capacidad) * 100);
+};
 
 const getNivel = (pct) => {
   if (pct === null || pct === undefined) return "sin-datos";
@@ -123,10 +24,13 @@ const getNivel = (pct) => {
 };
 
 const getLabelNivel = (nivel) => {
-  if (nivel === "lleno") return "Lleno";
-  if (nivel === "casi-lleno") return "Casi lleno";
-  if (nivel === "disponible") return "Disponible";
-  return "Sin datos";
+  const labels = {
+    lleno: "Lleno",
+    "casi-lleno": "Casi lleno",
+    disponible: "Disponible",
+    "sin-datos": "Sin datos",
+  };
+  return labels[nivel] ?? "Sin datos";
 };
 
 const fmtHora = (ts) => {
@@ -140,6 +44,7 @@ const fmtHora = (ts) => {
 
 const fmtCoord = (v) => (v != null ? parseFloat(v).toFixed(5) : "—");
 
+// ── Sub-components ────────────────────────────────────
 function StatCard({ label, value, color }) {
   return (
     <div className={`stat-card stat-card--${color}`}>
@@ -151,8 +56,10 @@ function StatCard({ label, value, color }) {
 }
 
 function BusCard({ bus }) {
-  const r = bus.ultimoReporte;
-  const pct = r?.porcentaje_ocupacion ?? null;
+  const ultimoReporte = getUltimoReporte(bus.reportes);
+  const pct = ultimoReporte
+    ? calcPct(ultimoReporte.cantidad_pasajeros, bus.capacidad)
+    : null;
   const nivel = getNivel(pct);
 
   return (
@@ -161,7 +68,7 @@ function BusCard({ bus }) {
         <div>
           <div className="bus-card__code">{bus.codigo_bus}</div>
           <div className="bus-card__type">
-            {bus.tipoServicio?.tiposervicio ?? "—"} · Cap. {bus.capacidad}
+            {bus.tiposervicios?.tiposervicio ?? "—"} · Cap. {bus.capacidad}
           </div>
         </div>
         <span className={`badge badge--${nivel}`}>{getLabelNivel(nivel)}</span>
@@ -176,8 +83,8 @@ function BusCard({ bus }) {
 
       <div className="bus-card__meta">
         <span>
-          {r
-            ? `${r.cantidad_pasajeros} / ${bus.capacidad} pasajeros`
+          {ultimoReporte
+            ? `${ultimoReporte.cantidad_pasajeros} / ${bus.capacidad} pasajeros`
             : "Sin reporte"}
         </span>
         <span className="bus-card__pct">{pct !== null ? `${pct}%` : "—"}</span>
@@ -186,26 +93,63 @@ function BusCard({ bus }) {
   );
 }
 
+// ── Main component ────────────────────────────────────
+const POLL_INTERVAL = 30_000; // 30 segundos
+
 export default function DashBoard() {
-  const buses = BUSES_MOCK;
+  const [buses, setBuses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [lastUpdate, setLastUpdate] = useState(null);
 
+  const fetchData = useCallback(async () => {
+    try {
+      const data = await getBuses();
+      setBuses(data);
+      setError(null);
+      setLastUpdate(new Date());
+    } catch (err) {
+      setError("No se pudo conectar con el servidor. Reintentando...");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Carga inicial + polling cada 30 segundos
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(fetchData, POLL_INTERVAL);
+    return () => clearInterval(interval);
+  }, [fetchData]);
+
+  // ── Stats derivados ──
   const total = buses.length;
-  const dispCount = buses.filter(
-    (b) => getNivel(b.ultimoReporte?.porcentaje_ocupacion) === "disponible",
-  ).length;
-  const casiCount = buses.filter(
-    (b) => getNivel(b.ultimoReporte?.porcentaje_ocupacion) === "casi-lleno",
-  ).length;
-  const llenoCount = buses.filter(
-    (b) => getNivel(b.ultimoReporte?.porcentaje_ocupacion) === "lleno",
-  ).length;
+  const dispCount = buses.filter((b) => {
+    const r = getUltimoReporte(b.reportes);
+    return (
+      getNivel(calcPct(r?.cantidad_pasajeros, b.capacidad)) === "disponible"
+    );
+  }).length;
+  const casiCount = buses.filter((b) => {
+    const r = getUltimoReporte(b.reportes);
+    return (
+      getNivel(calcPct(r?.cantidad_pasajeros, b.capacidad)) === "casi-lleno"
+    );
+  }).length;
+  const llenoCount = buses.filter((b) => {
+    const r = getUltimoReporte(b.reportes);
+    return getNivel(calcPct(r?.cantidad_pasajeros, b.capacidad)) === "lleno";
+  }).length;
 
+  // Últimos 8 reportes más recientes (uno por bus)
   const ultimosReportes = buses
-    .filter((b) => b.ultimoReporte)
+    .map((bus) => {
+      const r = getUltimoReporte(bus.reportes);
+      return r ? { bus, reporte: r } : null;
+    })
+    .filter(Boolean)
     .sort(
-      (a, b) =>
-        new Date(b.ultimoReporte.timestamp) -
-        new Date(a.ultimoReporte.timestamp),
+      (a, b) => new Date(b.reporte.timestamp) - new Date(a.reporte.timestamp),
     )
     .slice(0, 8);
 
@@ -217,72 +161,150 @@ export default function DashBoard() {
         <header className="topbar">
           <span className="topbar-title">Dashboard</span>
           <div className="topbar-right">
-            <span className="live-dot" />
-            <span className="live-label">Vista previa con datos de prueba</span>
+            {loading && buses.length === 0 ? (
+              <span className="live-label">Cargando...</span>
+            ) : (
+              <>
+                <span className="live-dot" />
+                <span className="live-label">
+                  {lastUpdate
+                    ? `Actualizado a las ${fmtHora(lastUpdate)}`
+                    : "En vivo"}
+                </span>
+              </>
+            )}
           </div>
         </header>
 
         <main className="main-content">
           <div className="dashboard">
-            {/* Stats */}
-            <div className="stats-grid">
-              <StatCard label="Total buses" value={total} color="azul" />
-              <StatCard label="Disponibles" value={dispCount} color="verde" />
-              <StatCard
-                label="Casi llenos"
-                value={casiCount}
-                color="amarillo"
-              />
-              <StatCard label="Llenos" value={llenoCount} color="rojo" />
-            </div>
+            {/* Error banner */}
+            {error && <div className="error-banner">{error}</div>}
 
-            {/* Flota */}
-            <div className="section-title">Estado de la flota</div>
-            <div className="bus-cards-grid">
-              {buses.map((bus) => (
-                <BusCard key={bus.id_bus} bus={bus} />
-              ))}
-            </div>
+            {/* Skeleton de carga inicial */}
+            {loading && buses.length === 0 ? (
+              <>
+                <div className="stats-grid">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="stat-card">
+                      <div
+                        className="skeleton"
+                        style={{ height: 14, width: "60%", marginBottom: 8 }}
+                      />
+                      <div
+                        className="skeleton"
+                        style={{ height: 30, width: "40%" }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="section-title">Estado de la flota</div>
+                <div className="bus-cards-grid">
+                  {[...Array(6)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="bus-card"
+                      style={{ minHeight: 100 }}
+                    >
+                      <div
+                        className="skeleton"
+                        style={{ height: 14, width: "50%", marginBottom: 8 }}
+                      />
+                      <div
+                        className="skeleton"
+                        style={{ height: 5, marginBottom: 8 }}
+                      />
+                      <div
+                        className="skeleton"
+                        style={{ height: 12, width: "70%" }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Stats */}
+                <div className="stats-grid">
+                  <StatCard label="Total buses" value={total} color="azul" />
+                  <StatCard
+                    label="Disponibles"
+                    value={dispCount}
+                    color="verde"
+                  />
+                  <StatCard
+                    label="Casi llenos"
+                    value={casiCount}
+                    color="amarillo"
+                  />
+                  <StatCard label="Llenos" value={llenoCount} color="rojo" />
+                </div>
 
-            {/* Tabla */}
-            <div className="section-title" style={{ marginTop: 28 }}>
-              Últimos reportes
-            </div>
-            <div className="reportes-table-wrap">
-              <table className="reportes-table">
-                <thead>
-                  <tr>
-                    <th>Bus</th>
-                    <th>Pasajeros</th>
-                    <th>Ocupación</th>
-                    <th>Latitud</th>
-                    <th>Longitud</th>
-                    <th>Hora</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ultimosReportes.map((bus) => {
-                    const r = bus.ultimoReporte;
-                    const pct = r?.porcentaje_ocupacion ?? null;
-                    const nivel = getNivel(pct);
-                    return (
-                      <tr key={bus.id_bus}>
-                        <td className="td-bold">{bus.codigo_bus}</td>
-                        <td>{r.cantidad_pasajeros}</td>
-                        <td>
-                          <span className={`badge badge--${nivel}`}>
-                            {pct !== null ? `${pct}%` : "—"}
-                          </span>
-                        </td>
-                        <td className="muted">{fmtCoord(r.latitud)}</td>
-                        <td className="muted">{fmtCoord(r.longitud)}</td>
-                        <td className="muted">{fmtHora(r.timestamp)}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                {/* Flota */}
+                <div className="section-title">Estado de la flota</div>
+                {buses.length === 0 ? (
+                  <div className="estado-vacio">No hay buses registrados.</div>
+                ) : (
+                  <div className="bus-cards-grid">
+                    {buses.map((bus) => (
+                      <BusCard key={bus.id} bus={bus} />
+                    ))}
+                  </div>
+                )}
+
+                {/* Tabla */}
+                <div className="section-title" style={{ marginTop: 28 }}>
+                  Últimos reportes
+                </div>
+                {ultimosReportes.length === 0 ? (
+                  <div className="estado-vacio">Sin reportes disponibles.</div>
+                ) : (
+                  <div className="reportes-table-wrap">
+                    <table className="reportes-table">
+                      <thead>
+                        <tr>
+                          <th>Bus</th>
+                          <th>Pasajeros</th>
+                          <th>Ocupación</th>
+                          <th>Latitud</th>
+                          <th>Longitud</th>
+                          <th>Hora</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {ultimosReportes.map(({ bus, reporte }) => {
+                          const pct = calcPct(
+                            reporte.cantidad_pasajeros,
+                            bus.capacidad,
+                          );
+                          const nivel = getNivel(pct);
+                          return (
+                            <tr key={bus.id}>
+                              <td className="td-bold">{bus.codigo_bus}</td>
+                              <td>{reporte.cantidad_pasajeros}</td>
+                              <td>
+                                <span className={`badge badge--${nivel}`}>
+                                  {pct !== null ? `${pct}%` : "—"}
+                                </span>
+                              </td>
+                              <td className="muted">
+                                {fmtCoord(reporte.latitud)}
+                              </td>
+                              <td className="muted">
+                                {fmtCoord(reporte.longitud)}
+                              </td>
+                              <td className="muted">
+                                {fmtHora(reporte.timestamp)}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </main>
       </div>
