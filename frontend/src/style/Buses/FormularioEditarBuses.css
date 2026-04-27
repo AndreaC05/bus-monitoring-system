@@ -1,0 +1,30 @@
+/* Badge "Editando" en el header */
+.feb-badge-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: #ebf5fb;
+  color: var(--color-blue);
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid #bee0f5;
+  margin-left: auto;
+}
+
+/* Ícono del header con tono edición */
+.feb-header__icon--edit {
+  background: #ebf5fb !important;
+  border: 1px solid #bee0f5;
+}
+
+/* Botón guardar cambios (tono azul más oscuro) */
+.feb-btn-edit {
+  background: #256fa3 !important;
+  border-color: #256fa3 !important;
+}
+.feb-btn-edit:hover:not(:disabled) {
+  background: #1d5a87 !important;
+  border-color: #1d5a87 !important;
+}

@@ -1,0 +1,264 @@
+/* ── Page wrapper ──────────────────────────────────── */
+.dashboard {
+  padding: 24px;
+  max-width: 1200px;
+}
+
+/* ── Header del topbar ─────────────────────────────── */
+.dashboard-header h2 {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--color-text-dark);
+  margin: 0 0 4px;
+}
+
+/* ── Error banner ──────────────────────────────────── */
+.error-banner {
+  background: var(--color-lleno-bg);
+  border: 1px solid #FCCFCF;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--color-lleno-text);
+  margin-bottom: 20px;
+}
+
+/* ── Stats grid ────────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 18px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.15s;
+}
+
+.stat-card:hover {
+  border-color: #CBD5E1;
+}
+
+.stat-card__label {
+  font-size: 12px;
+  color: var(--color-text-gray);
+  font-weight: 400;
+}
+
+.stat-card__value {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-text-dark);
+}
+
+/* Barra de color inferior */
+.stat-card__bar {
+  height: 3px;
+  border-radius: 99px;
+  margin-top: 10px;
+}
+
+.stat-card--azul     .stat-card__bar { background: var(--color-blue); }
+.stat-card--verde    .stat-card__bar { background: var(--color-disponible); }
+.stat-card--amarillo .stat-card__bar { background: var(--color-casi); }
+.stat-card--rojo     .stat-card__bar { background: var(--color-lleno); }
+
+.stat-card--azul     .stat-card__value { color: var(--color-blue); }
+.stat-card--verde    .stat-card__value { color: var(--color-disponible); }
+.stat-card--amarillo .stat-card__value { color: #B7770D; }
+.stat-card--rojo     .stat-card__value { color: var(--color-lleno); }
+
+/* ── Section title ─────────────────────────────────── */
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 12px;
+}
+
+/* ── Bus cards ─────────────────────────────────────── */
+.bus-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.bus-card {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: border-color 0.15s, transform 0.12s;
+}
+
+.bus-card:hover {
+  border-color: #CBD5E1;
+  transform: translateY(-1px);
+}
+
+/* Acento izquierdo según estado */
+.bus-card--disponible { border-left: 3px solid var(--color-disponible); }
+.bus-card--casi-lleno { border-left: 3px solid var(--color-casi); }
+.bus-card--lleno      { border-left: 3px solid var(--color-lleno); }
+.bus-card--sin-datos  { border-left: 3px solid var(--color-border); }
+
+.bus-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.bus-card__code {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.bus-card__type {
+  font-size: 11px;
+  color: var(--color-text-gray);
+  margin-top: 2px;
+}
+
+/* ── Badge ─────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.badge--disponible { background: var(--color-disponible-bg); color: var(--color-disponible-text); }
+.badge--casi-lleno { background: var(--color-casi-bg);       color: var(--color-casi-text); }
+.badge--lleno      { background: var(--color-lleno-bg);      color: var(--color-lleno-text); }
+.badge--sin-datos  { background: #F3F4F6;                    color: var(--color-text-gray); }
+
+/* ── Barra de ocupación ────────────────────────────── */
+.ocu-bar-bg {
+  height: 5px;
+  border-radius: 99px;
+  background: #F0F2F5;
+  overflow: hidden;
+  margin: 6px 0 5px;
+}
+
+.ocu-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+
+.ocu-bar-fill--disponible { background: var(--color-disponible); }
+.ocu-bar-fill--casi-lleno { background: var(--color-casi); }
+.ocu-bar-fill--lleno      { background: var(--color-lleno); }
+.ocu-bar-fill--sin-datos  { background: #D1D5DB; }
+
+.bus-card__meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-text-gray);
+  margin-top: 2px;
+}
+
+.bus-card__pct {
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+/* ── Tabla reportes ────────────────────────────────── */
+.reportes-table-wrap {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.reportes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.reportes-table thead tr {
+  background: #F9FAFB;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.reportes-table thead th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.reportes-table tbody tr {
+  border-bottom: 1px solid #F3F4F6;
+  transition: background 0.1s;
+}
+
+.reportes-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.reportes-table tbody tr:hover {
+  background: #F9FAFB;
+}
+
+.reportes-table tbody td {
+  padding: 10px 16px;
+  color: var(--color-text-dark);
+}
+
+.td-bold { font-weight: 500; }
+.muted   { color: var(--color-text-gray) !important; }
+
+/* ── Skeleton ──────────────────────────────────────── */
+.skeleton {
+  background: #EAECEF;
+  border-radius: 6px;
+  animation: shimmer 1.3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+/* ── Empty state ───────────────────────────────────── */
+.estado-vacio {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--color-text-gray);
+  font-size: 14px;
+}
+
+/* ── Responsive ────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard { padding: 16px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}

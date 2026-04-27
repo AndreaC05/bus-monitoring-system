@@ -1,0 +1,218 @@
+/* ── Layout shell ──────────────────────────────────── */
+.layout-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Sidebar ───────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--color-navy);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+/* ── Logo ──────────────────────────────────────────── */
+.sb-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.sb-logo-text {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+  font-family: 'Inter', sans-serif;
+}
+
+.sb-logo-sub {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 11px;
+  margin-top: 1px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Nav ───────────────────────────────────────────── */
+.sb-nav {
+  flex: 1;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.sb-section-label {
+  display: block;
+  padding: 4px 8px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Nav item ──────────────────────────────────────── */
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.5);
+  transition: background 0.15s ease, color 0.15s ease;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+}
+
+.sb-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Indicador activo: borde izquierdo + fondo sutil */
+.sb-item.active {
+  background: rgba(50, 140, 193, 0.2);
+  color: #ffffff;
+}
+
+.sb-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--color-blue);
+}
+
+.sb-item.active .sb-item-label {
+  font-weight: 500;
+}
+
+.sb-item.active .sb-item-icon {
+  color: var(--color-blue);
+}
+
+/* ── Icon ──────────────────────────────────────────── */
+.sb-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  transition: color 0.15s ease;
+}
+
+/* ── Label ─────────────────────────────────────────── */
+.sb-item-label {
+  font-size: 13.5px;
+  font-weight: 400;
+  letter-spacing: -0.1px;
+}
+
+/* ── Divisor entre secciones ───────────────────────── */
+.sb-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 10px 12px;
+}
+
+/* ── Footer ────────────────────────────────────────── */
+.sb-footer {
+  padding: 14px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.2);
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sb-footer-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-disponible);
+  animation: pulse-dot 2.5s ease-in-out infinite;
+}
+
+/* ── Main area ─────────────────────────────────────── */
+.main-area {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg-page);
+}
+
+/* ── Topbar ────────────────────────────────────────── */
+.topbar {
+  height: var(--topbar-height);
+  background: #ffffff;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.topbar-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-dark);
+  font-family: 'Inter', sans-serif;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-disponible);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.live-label {
+  font-size: 12px;
+  color: var(--color-text-gray);
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Main content slot ─────────────────────────────── */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+}

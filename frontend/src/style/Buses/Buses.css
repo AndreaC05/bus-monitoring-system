@@ -1,0 +1,405 @@
+/* ── Page wrapper ──────────────────────────────────── */
+.buses-page {
+  padding: 24px;
+}
+
+/* ── Header ────────────────────────────────────────── */
+.buses-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.buses-header__titles h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin: 0 0 3px;
+}
+
+.buses-header__titles p {
+  font-size: 13px;
+  color: var(--color-text-gray);
+  margin: 0;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--color-navy);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+  white-space: nowrap;
+}
+
+.btn-primary:hover {
+  background: #0d4a73;
+}
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* ── Filtros ───────────────────────────────────────── */
+.buses-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 320px;
+}
+
+.search-wrap__icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-gray);
+  display: flex;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px 0 34px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: "Inter", sans-serif;
+  color: var(--color-text-dark);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.search-input:focus {
+  border-color: var(--color-blue);
+}
+
+.search-input::placeholder {
+  color: #b0b7c3;
+}
+
+.filter-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: "Inter", sans-serif;
+  color: var(--color-text-gray);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: #cbd5e1;
+  color: var(--color-text-dark);
+}
+
+.chip.chip--active {
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+  color: #ffffff;
+}
+
+.chip--disponible.chip--active {
+  background: var(--color-disponible);
+  border-color: var(--color-disponible);
+}
+.chip--casi.chip--active {
+  background: #b7770d;
+  border-color: #b7770d;
+}
+.chip--lleno.chip--active {
+  background: var(--color-lleno);
+  border-color: var(--color-lleno);
+}
+
+/* ── Contador resultados ───────────────────────────── */
+.buses-count {
+  font-size: 12px;
+  color: var(--color-text-gray);
+  margin-bottom: 14px;
+}
+
+.buses-count span {
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+/* ── Tabla ─────────────────────────────────────────── */
+.buses-table-wrap {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.buses-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.buses-table thead tr {
+  background: #f9fafb;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.buses-table thead th {
+  padding: 11px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.buses-table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.1s;
+}
+
+.buses-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.buses-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.buses-table tbody td {
+  padding: 13px 16px;
+  color: var(--color-text-dark);
+  vertical-align: middle;
+}
+
+/* Celda código */
+.td-codigo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bus-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--color-blue-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-blue);
+}
+
+.td-codigo-text strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.td-codigo-text span {
+  font-size: 11px;
+  color: var(--color-text-gray);
+}
+
+/* Celda capacidad */
+.td-capacidad {
+  font-weight: 500;
+  color: var(--color-text-dark);
+}
+
+/* Celda ocupación */
+.td-ocu {
+  min-width: 140px;
+}
+
+.td-ocu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+.td-ocu-pct {
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.td-ocu-num {
+  color: var(--color-text-gray);
+  font-size: 11px;
+}
+
+.ocu-bar-bg {
+  height: 5px;
+  border-radius: 99px;
+  background: #f0f2f5;
+  overflow: hidden;
+}
+
+.ocu-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.ocu-bar-fill--disponible {
+  background: var(--color-disponible);
+}
+.ocu-bar-fill--casi-lleno {
+  background: var(--color-casi);
+}
+.ocu-bar-fill--lleno {
+  background: var(--color-lleno);
+}
+.ocu-bar-fill--sin-datos {
+  background: #d1d5db;
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.badge--disponible {
+  background: var(--color-disponible-bg);
+  color: var(--color-disponible-text);
+}
+.badge--disponible .badge__dot {
+  background: var(--color-disponible);
+}
+
+.badge--casi-lleno {
+  background: var(--color-casi-bg);
+  color: var(--color-casi-text);
+}
+.badge--casi-lleno .badge__dot {
+  background: var(--color-casi);
+}
+
+.badge--lleno {
+  background: var(--color-lleno-bg);
+  color: var(--color-lleno-text);
+}
+.badge--lleno .badge__dot {
+  background: var(--color-lleno);
+}
+
+.badge--sin-datos {
+  background: #f3f4f6;
+  color: var(--color-text-gray);
+}
+.badge--sin-datos .badge__dot {
+  background: #d1d5db;
+}
+
+/* Celda timestamp */
+.td-time {
+  color: var(--color-text-gray);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Celda servicio */
+.td-servicio {
+  font-size: 12px;
+  color: var(--color-text-gray);
+}
+
+/* ── Empty state ───────────────────────────────────── */
+.buses-empty {
+  text-align: center;
+  padding: 56px 20px;
+  color: var(--color-text-gray);
+}
+
+.buses-empty__icon {
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+
+.buses-empty p {
+  font-size: 14px;
+}
+
+.td-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+ 
+.td-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-gray);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+ 
+.td-action-btn--edit:hover {
+  background: var(--color-blue-light);
+  color: var(--color-blue);
+  border-color: #BEE0F5;
+}
+ 
+.td-action-btn--delete:hover {
+  background: var(--color-lleno-bg);
+  color: var(--color-lleno);
+  border-color: #FADBD8;
+}

@@ -1,0 +1,227 @@
+.fb-dialog {
+  width: 480px;
+  max-width: 95vw;
+  border-radius: 14px !important;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12) !important;
+}
+
+.fb-mask {
+  background: rgba(11, 60, 93, 0.35) !important;
+  backdrop-filter: blur(3px);
+}
+
+.fb-dialog .p-dialog-header {
+  padding: 0 !important;
+  border-bottom: none !important;
+}
+.fb-dialog .p-dialog-content {
+  padding: 0 !important;
+}
+.fb-dialog .p-dialog-footer {
+  padding: 0 !important;
+  border-top: none !important;
+}
+
+/* ── Header ── */
+.fb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid var(--color-border);
+  gap: 12px;
+}
+.fb-header__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.fb-header__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid;
+}
+.fb-header__icon--red {
+  background: var(--color-lleno-bg);
+  border-color: #fadbd8;
+  color: var(--color-lleno);
+}
+.fb-header__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin: 0 0 2px;
+}
+.fb-header__sub {
+  font-size: 12px;
+  color: var(--color-text-gray);
+  margin: 0;
+}
+
+/* ── Body ── */
+.fd-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Preview de la estación ── */
+.fd-preview {
+  background: #f9fafb;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fd-preview__name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fd-preview__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-navy);
+  flex-shrink: 0;
+}
+
+.fd-preview__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.fd-preview__id {
+  margin-left: auto;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: #f3f4f6;
+  color: var(--color-text-gray);
+  font-weight: 500;
+}
+
+.fd-preview__coords {
+  display: flex;
+  gap: 10px;
+}
+
+.fd-preview__coords .coord-item {
+  flex: 1;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  padding: 8px 10px;
+}
+
+.fd-preview__coords .coord-item__label {
+  font-size: 10px;
+  color: var(--color-text-gray);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 3px;
+}
+
+.fd-preview__coords .coord-item__val {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Warning ── */
+.fd-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--color-lleno-bg);
+  border: 1px solid #fadbd8;
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: #791f1f;
+}
+
+.fd-warning__text {
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.fd-warning__text strong {
+  font-weight: 600;
+}
+
+/* ── Footer ── */
+.fb-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid var(--color-border);
+  gap: 12px;
+}
+.fb-footer__note {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: var(--color-text-gray);
+}
+.fb-footer__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.fb-btn-cancel {
+  background: transparent !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-text-dark) !important;
+  font-size: 13px !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  transition: background 0.12s !important;
+}
+.fb-btn-cancel:hover:not(:disabled) {
+  background: #f3f4f6 !important;
+}
+
+.fb-btn-submit {
+  border: none;
+  font-size: 13px !important;
+  padding: 8px 18px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition:
+    background 0.15s,
+    border-color 0.15s !important;
+}
+.fb-btn-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.fb-btn-submit--red {
+  background: var(--color-lleno) !important;
+  border-color: var(--color-lleno) !important;
+  color: #fff !important;
+}
+.fb-btn-submit--red:hover:not(:disabled) {
+  background: #c0392b !important;
+  border-color: #c0392b !important;
+}

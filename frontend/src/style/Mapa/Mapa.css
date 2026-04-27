@@ -1,0 +1,312 @@
+/* ── Page ──────────────────────────────────────────── */
+.mapa-page {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--topbar-height));
+  overflow: hidden;
+}
+
+/* ── Header ────────────────────────────────────────── */
+.mapa-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.mapa-header__titles h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin: 0 0 3px;
+}
+
+.mapa-header__titles p {
+  font-size: 13px;
+  color: var(--color-text-gray);
+  margin: 0;
+}
+
+.mapa-header__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Chips de filtro ───────────────────────────────── */
+.mapa-chips {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.mchip {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  color: var(--color-text-gray);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.mchip:hover { border-color: #CBD5E1; color: var(--color-text-dark); }
+.mchip.active { background: var(--color-navy); border-color: var(--color-navy); color: #fff; }
+
+.mchip__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Layout mapa + panel ───────────────────────────── */
+.mapa-body {
+  display: flex;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Panel lateral ─────────────────────────────────── */
+.mapa-panel {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.panel-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 2px;
+}
+
+/* Card de bus en el panel */
+.panel-bus-card {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.1s;
+  border-left: 3px solid transparent;
+}
+
+.panel-bus-card:hover {
+  border-color: #CBD5E1;
+  transform: translateX(2px);
+}
+
+.panel-bus-card.selected {
+  border-color: var(--color-blue);
+  border-left-color: var(--color-blue);
+  background: #F4F9FD;
+}
+
+.panel-bus-card--disponible { border-left-color: var(--color-disponible); }
+.panel-bus-card--casi-lleno { border-left-color: var(--color-casi); }
+.panel-bus-card--lleno      { border-left-color: var(--color-lleno); }
+.panel-bus-card--sin-datos  { border-left-color: var(--color-border); }
+
+.pbc-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.pbc-code {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 99px;
+}
+
+.badge__dot { width: 5px; height: 5px; border-radius: 50%; }
+
+.badge--disponible { background: var(--color-disponible-bg); color: var(--color-disponible-text); }
+.badge--disponible .badge__dot { background: var(--color-disponible); }
+.badge--casi-lleno { background: var(--color-casi-bg); color: var(--color-casi-text); }
+.badge--casi-lleno .badge__dot { background: var(--color-casi); }
+.badge--lleno      { background: var(--color-lleno-bg); color: var(--color-lleno-text); }
+.badge--lleno .badge__dot { background: var(--color-lleno); }
+.badge--sin-datos  { background: #F3F4F6; color: var(--color-text-gray); }
+.badge--sin-datos .badge__dot { background: #D1D5DB; }
+
+.ocu-bar-bg {
+  height: 4px;
+  border-radius: 99px;
+  background: #F0F2F5;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.ocu-bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s; }
+.ocu-bar-fill--disponible { background: var(--color-disponible); }
+.ocu-bar-fill--casi-lleno { background: var(--color-casi); }
+.ocu-bar-fill--lleno      { background: var(--color-lleno); }
+.ocu-bar-fill--sin-datos  { background: #D1D5DB; }
+
+.pbc-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-text-gray);
+}
+
+.pbc-coord {
+  font-size: 10px;
+  color: #B0B7C3;
+  margin-top: 5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Contenedor del mapa ───────────────────────────── */
+.mapa-container {
+  flex: 1;
+  background: #EDF1F7;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+}
+
+/* SVG mapa simulado */
+.mapa-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Pin de bus */
+.bus-pin {
+  cursor: pointer;
+  transition: transform 0.2s;
+  transform-origin: center;
+}
+
+.bus-pin:hover { transform: scale(1.15); }
+
+.bus-pin.selected { transform: scale(1.2); }
+
+/* Popup de bus en el mapa */
+.map-popup {
+  position: absolute;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  min-width: 180px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.map-popup__code {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin-bottom: 6px;
+}
+
+.map-popup__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-text-gray);
+  margin-bottom: 3px;
+}
+
+.map-popup__row span:last-child {
+  font-weight: 500;
+  color: var(--color-text-dark);
+}
+
+/* Leyenda */
+.mapa-leyenda {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: var(--color-text-gray);
+}
+
+.leyenda-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Contador flotante */
+.mapa-counter {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  display: flex;
+  gap: 16px;
+}
+
+.mapa-counter-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mapa-counter-item span:first-child {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-dark);
+  line-height: 1;
+}
+
+.mapa-counter-item span:last-child {
+  font-size: 10px;
+  color: var(--color-text-gray);
+  margin-top: 2px;
+}

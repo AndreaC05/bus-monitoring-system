@@ -1,0 +1,1038 @@
+/* ── Page wrapper ──────────────────────────────────── */
+.estaciones-page {
+  padding: 24px;
+}
+
+/* ── Header ────────────────────────────────────────── */
+.estaciones-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.estaciones-header__titles h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin: 0 0 3px;
+}
+
+.estaciones-header__titles p {
+  font-size: 13px;
+  color: var(--color-text-gray);
+  margin: 0;
+}
+
+/* ── Stats rápidas ─────────────────────────────────── */
+.estaciones-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.est-stat {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 160px;
+}
+
+.est-stat__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.est-stat__icon--blue {
+  background: var(--color-blue-light);
+  color: var(--color-blue);
+}
+.est-stat__icon--green {
+  background: var(--color-disponible-bg);
+  color: var(--color-disponible);
+}
+.est-stat__icon--navy {
+  background: #e8eef4;
+  color: var(--color-navy);
+}
+
+.est-stat__val {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-dark);
+  line-height: 1;
+}
+
+.est-stat__label {
+  font-size: 11px;
+  color: var(--color-text-gray);
+  margin-top: 2px;
+}
+
+/* ── Buscador ──────────────────────────────────────── */
+.estaciones-search {
+  position: relative;
+  max-width: 320px;
+  margin-bottom: 16px;
+}
+
+.estaciones-search__icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-gray);
+  display: flex;
+  pointer-events: none;
+}
+
+.estaciones-search input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px 0 34px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: "Inter", sans-serif;
+  color: var(--color-text-dark);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.estaciones-search input:focus {
+  border-color: var(--color-blue);
+}
+.estaciones-search input::placeholder {
+  color: #b0b7c3;
+}
+
+/* ── Grid de cards ─────────────────────────────────── */
+.estaciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+/* ── Card de estación ──────────────────────────────── */
+.estacion-card {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition:
+    border-color 0.15s,
+    transform 0.12s;
+}
+
+.estacion-card:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+/* Franja superior con número de orden */
+.estacion-card__stripe {
+  background: var(--color-navy);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.estacion-card__orden {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.orden-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.estacion-card__nombre {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.estacion-card__servicio {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+}
+
+/* Cuerpo */
+.estacion-card__body {
+  padding: 14px 16px;
+}
+
+.estacion-card__coord-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.coord-item {
+  flex: 1;
+  background: #f9fafb;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  padding: 8px 10px;
+}
+
+.coord-item__label {
+  font-size: 10px;
+  color: var(--color-text-gray);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 3px;
+}
+
+.coord-item__val {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Buses en esta estación */
+.estacion-card__buses {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.estacion-card__buses-label {
+  font-size: 11px;
+  color: var(--color-text-gray);
+}
+
+.buses-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.bus-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: var(--color-blue-light);
+  color: var(--color-blue);
+}
+
+.bus-tag--none {
+  font-size: 11px;
+  color: var(--color-text-gray);
+  font-style: italic;
+}
+
+/* ── Linea de ruta visual ──────────────────────────── */
+.ruta-line {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.ruta-stop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: default;
+}
+
+.ruta-stop__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-navy);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px var(--color-navy);
+  z-index: 1;
+  transition: transform 0.15s;
+}
+
+.ruta-stop:hover .ruta-stop__dot {
+  transform: scale(1.3);
+  background: var(--color-blue);
+  box-shadow: 0 0 0 2px var(--color-blue);
+}
+
+.ruta-stop__label {
+  font-size: 9px;
+  color: var(--color-text-gray);
+  margin-top: 5px;
+  text-align: center;
+  max-width: 64px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ruta-line-segment {
+  flex: 1;
+  height: 2px;
+  background: #e5e7eb;
+  min-width: 24px;
+  max-width: 56px;
+}
+
+/* ── Empty state ───────────────────────────────────── */
+.estaciones-empty {
+  text-align: center;
+  padding: 56px 20px;
+  color: var(--color-text-gray);
+  grid-column: 1 / -1;
+}
+
+.estaciones-empty p {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* ── Botones de acción en card ── */
+.estacion-card__actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.btn-estacion {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 32px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+  border: 1px solid;
+  transition:
+    opacity 0.15s,
+    transform 0.1s;
+}
+.btn-estacion:active {
+  transform: scale(0.97);
+}
+
+.btn-estacion--edit {
+  background: var(--color-blue-light);
+  border-color: #b5d4f4;
+  color: #185fa5;
+}
+.btn-estacion--edit:hover {
+  background: #d0e8f8;
+}
+
+.btn-estacion--delete {
+  background: var(--color-lleno-bg);
+  border-color: #fadbd8;
+  color: var(--color-lleno);
+}
+.btn-estacion--delete:hover {
+  background: #fadbd8;
+}
+
+/** Estaciones CSS ADICIONAL**/
+/* Botón para expandir/colapsar servicios */
+.btn-toggle-servicios {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-blue, #185fa5);
+  background: transparent;
+  border: 1px solid var(--color-blue, #185fa5);
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-toggle-servicios:hover {
+  background: rgba(24, 95, 165, 0.08);
+}
+
+/* Panel expandido de servicios */
+.servicios-panel {
+  margin-top: 10px;
+  border-top: 1px solid #e8eaf0;
+  padding-top: 10px;
+  animation: slideDown 0.18s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estado vacío de servicios */
+.servicios-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  color: #9ba3b5;
+  font-size: 12px;
+}
+
+/* Lista de servicios */
+.servicios-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Fila de un servicio */
+.servicio-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f5f7fb;
+  border-radius: 8px;
+  padding: 7px 10px;
+  gap: 8px;
+}
+
+.servicio-row__info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* Badge de orden */
+.servicio-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #185fa5;
+  background: #e6f1fb;
+  border-radius: 4px;
+  padding: 3px 7px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Nombre del tipo de servicio */
+.servicio-nombre {
+  font-size: 12px;
+  font-weight: 500;
+  color: #2c3550;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Acciones por fila de servicio */
+.servicio-row__actions {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+/* Botones de acción de tiposervicio */
+.btn-ts {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn-ts--edit {
+  color: #185fa5;
+  background: #e6f1fb;
+  border-color: #b5d4f4;
+}
+.btn-ts--edit:hover {
+  background: #b5d4f4;
+}
+
+.btn-ts--delete {
+  color: #a32d2d;
+  background: #fcebeb;
+  border-color: #f7c1c1;
+}
+.btn-ts--delete:hover {
+  background: #f7c1c1;
+}
+
+/* Estilos para formularios modales */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.form-input {
+  padding: 8px 12px;
+  border: 1px solid #d0d7e8;
+  border-radius: 7px;
+  font-size: 13px;
+  color: #2c3550;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.form-input:focus {
+  border-color: #185fa5;
+  box-shadow: 0 0 0 2px rgba(24, 95, 165, 0.1);
+}
+
+.form-input--readonly {
+  background: #f5f7fb;
+  color: #7a869a;
+  cursor: not-allowed;
+}
+
+.form-hint {
+  font-size: 11px;
+  color: #9ba3b5;
+}
+
+.form-error {
+  font-size: 12px;
+  color: #a32d2d;
+}
+
+/* Confirmación de eliminar */
+.modal-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.modal-confirm__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-confirm__icon--danger {
+  background: #fcebeb;
+  color: #a32d2d;
+}
+
+.modal-confirm__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2c3550;
+  margin: 0;
+}
+
+.modal-confirm__subtitle {
+  font-size: 13px;
+  color: #7a869a;
+  margin: 4px 0 0;
+}
+
+/* Botones de modales */
+.btn-modal-cancel {
+  padding: 8px 18px;
+  font-size: 13px;
+  border-radius: 7px;
+  border: 1px solid #d0d7e8;
+  background: white;
+  color: #4a5568;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-modal-cancel:hover {
+  background: #f5f7fb;
+}
+
+.btn-modal-confirm {
+  padding: 8px 18px;
+  font-size: 13px;
+  border-radius: 7px;
+  border: none;
+  background: #185fa5;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.btn-modal-confirm:hover {
+  background: #0c447c;
+}
+
+.btn-modal-danger {
+  padding: 8px 18px;
+  font-size: 13px;
+  border-radius: 7px;
+  border: none;
+  background: #a32d2d;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.btn-modal-danger:hover {
+  background: #791f1f;
+}
+
+/* Card en estado expandido */
+.estacion-card--expanded {
+  border-color: #b5d4f4;
+  box-shadow: 0 0 0 2px rgba(24, 95, 165, 0.08);
+}
+
+/* ── Añade esto a tu archivo Estaciones.css ─────────────────────────────── */
+
+/* Botón para expandir/colapsar servicios */
+.btn-toggle-servicios {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-blue, #185fa5);
+  background: transparent;
+  border: 1px solid var(--color-blue, #185fa5);
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-toggle-servicios:hover {
+  background: rgba(24, 95, 165, 0.08);
+}
+
+/* Panel expandido de servicios */
+.servicios-panel {
+  margin-top: 10px;
+  border-top: 1px solid #e8eaf0;
+  padding-top: 10px;
+  animation: slideDown 0.18s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estado vacío de servicios */
+.servicios-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  color: #9ba3b5;
+  font-size: 12px;
+}
+
+/* Lista de servicios */
+.servicios-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Fila de un servicio */
+.servicio-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f5f7fb;
+  border-radius: 8px;
+  padding: 7px 10px;
+  gap: 8px;
+}
+
+.servicio-row__info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* Badge de orden */
+.servicio-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #185fa5;
+  background: #e6f1fb;
+  border-radius: 4px;
+  padding: 3px 7px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Nombre del tipo de servicio */
+.servicio-nombre {
+  font-size: 12px;
+  font-weight: 500;
+  color: #2c3550;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Acciones por fila de servicio */
+.servicio-row__actions {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+/* Botones de acción de tiposervicio */
+.btn-ts {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn-ts--edit {
+  color: #185fa5;
+  background: #e6f1fb;
+  border-color: #b5d4f4;
+}
+.btn-ts--edit:hover {
+  background: #b5d4f4;
+}
+
+.btn-ts--delete {
+  color: #a32d2d;
+  background: #fcebeb;
+  border-color: #f7c1c1;
+}
+.btn-ts--delete:hover {
+  background: #f7c1c1;
+}
+
+/* Estilos para formularios modales */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.form-input {
+  padding: 8px 12px;
+  border: 1px solid #d0d7e8;
+  border-radius: 7px;
+  font-size: 13px;
+  color: #2c3550;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.form-input:focus {
+  border-color: #185fa5;
+  box-shadow: 0 0 0 2px rgba(24, 95, 165, 0.1);
+}
+
+.form-input--readonly {
+  background: #f5f7fb;
+  color: #7a869a;
+  cursor: not-allowed;
+}
+
+.form-hint {
+  font-size: 11px;
+  color: #9ba3b5;
+}
+
+.form-error {
+  font-size: 12px;
+  color: #a32d2d;
+}
+
+/* Confirmación de eliminar */
+.modal-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.modal-confirm__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-confirm__icon--danger {
+  background: #fcebeb;
+  color: #a32d2d;
+}
+
+.modal-confirm__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2c3550;
+  margin: 0;
+}
+
+.modal-confirm__subtitle {
+  font-size: 13px;
+  color: #7a869a;
+  margin: 4px 0 0;
+}
+
+/* Botones de modales */
+.btn-modal-cancel {
+  padding: 8px 18px;
+  font-size: 13px;
+  border-radius: 7px;
+  border: 1px solid #d0d7e8;
+  background: white;
+  color: #4a5568;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-modal-cancel:hover {
+  background: #f5f7fb;
+}
+
+.btn-modal-confirm {
+  padding: 8px 18px;
+  font-size: 13px;
+  border-radius: 7px;
+  border: none;
+  background: #185fa5;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.btn-modal-confirm:hover {
+  background: #0c447c;
+}
+
+.btn-modal-danger {
+  padding: 8px 18px;
+  font-size: 13px;
+  border-radius: 7px;
+  border: none;
+  background: #a32d2d;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.btn-modal-danger:hover {
+  background: #791f1f;
+}
+
+/* Card en estado expandido */
+.estacion-card--expanded {
+  border-color: #b5d4f4;
+  box-shadow: 0 0 0 2px rgba(24, 95, 165, 0.08);
+}
+
+/* Estado vacío con CTA de agregar */
+.servicios-empty-full {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 10px;
+  text-align: center;
+}
+
+.servicios-empty-full__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f0f4fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ba3b5;
+}
+
+.servicios-empty-full__text {
+  font-size: 12px;
+  color: #9ba3b5;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Botón agregar servicio — estado vacío (llamativo) */
+.btn-agregar-servicio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  background: #185fa5;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
+}
+
+.btn-agregar-servicio:hover {
+  background: #0c447c;
+  transform: translateY(-1px);
+}
+
+.btn-agregar-servicio:active {
+  transform: translateY(0);
+}
+
+/* Botón agregar cuando ya hay servicios — discreto */
+.btn-agregar-servicio--inline {
+  width: 100%;
+  justify-content: center;
+  margin-top: 8px;
+  background: transparent;
+  color: #185fa5;
+  border: 1px dashed #b5d4f4;
+  font-weight: 500;
+}
+
+.btn-agregar-servicio--inline:hover {
+  background: #e6f1fb;
+  transform: none;
+}
+
+/* Select en formularios */
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 16 16' fill='none' stroke='%239ba3b5' strokeWidth='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='3,6 8,11 13,6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+/* Loading en formulario */
+.form-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #9ba3b5;
+  border: 1px solid #d0d7e8;
+  border-radius: 7px;
+  background: #f5f7fb;
+}

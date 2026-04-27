@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* Fondo */
+  --color-white: #FFFFFF;
+
+  /* Principales */
+  --color-navy: #0B3C5D;
+  --color-navy-hover: rgba(255, 255, 255, 0.07);
+  --color-blue: #328CC1;
+  --color-blue-light: #E8F4FB;
+
+  /* Texto */
+  --color-text-dark: #1F2937;
+  --color-text-gray: #6B7280;
+
+  /* Cards / contenedores */
+  --color-bg-page: #FFFFFF;
+  --color-bg-card: #FFFFFF;
+  --color-border: #E5E7EB;
+
+  /* Estados */
+  --color-disponible: #27AE60;
+  --color-disponible-bg: #EAFAF1;
+  --color-disponible-text: #1E8449;
+
+  --color-casi: #F2C94C;
+  --color-casi-bg: #FEF9E7;
+  --color-casi-text: #B7770D;
+
+  --color-lleno: #EB5757;
+  --color-lleno-bg: #FDEDEC;
+  --color-lleno-text: #C0392B;
+
+  /* Layout */
+  --sidebar-width: 230px;
+  --topbar-height: 54px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg-page);
+  color: var(--color-text-dark);
+  font-family: 'Inter', sans-serif;
+}
